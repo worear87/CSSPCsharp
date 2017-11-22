@@ -10,6 +10,19 @@ namespace CSSP
     {
         static void Main(string[] args)
         {
+            //intialize matrices
+            Graph region = new Graph(6, 6);
+            
+            region.ToString();
+        }
+
+        static void PrintPath(Path p)
+        {
+            string rtn = "";
+            foreach(Edge e in p.PathToTake)
+            {
+                rtn = rtn + e.ToString() + "\n";
+            }
         }
     }
 }
