@@ -11,7 +11,7 @@ namespace CSSP
         static void Main(string[] args)
         {
             //intialize matrices
-            Graph region = new Graph(6, 6);
+            Region region = new Region();
             
             region.ToString();
         }

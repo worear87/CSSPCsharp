@@ -10,7 +10,7 @@ namespace CSSP
     {
         Vertex[,] vertices;
         Edge[,] edges;
-        public Graph(int rows, int cols)
+        public Graph(Region r, Aircraft a)
         {
             this.vertices = BuildGraph(rows, cols);
         }
