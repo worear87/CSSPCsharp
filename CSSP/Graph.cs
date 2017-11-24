@@ -9,11 +9,13 @@ namespace CSSP
     class Graph
     {
         Vertex[,] vertices;
-        Edge[,] edges;
+        List<Edge> edges;
+        List<Vertex> boundarySet;
         public Graph(Region r, Aircraft a)
         {
             this.vertices = BuildGraph((int)Math.Ceiling(r.RegionLength/a.MinTurnRadius), (int)Math.Ceiling(r.RegionWidth / a.MinTurnRadius));
             this.edges = BuildEdges(this.vertices);
+            this.boundarySet = (from Vertex v in vertices where v.IsBoundary == true select v).ToList<Vertex>(); 
         }
         public Graph()
         {
@@ -28,7 +30,7 @@ namespace CSSP
                 for (int j = 0; j < cols; j++)
                 {
                     Vertex temp = new Vertex(i, j);
-                    if ((i == 0 && j == 0) || (i == rows && j == cols))
+                    if ((i == 0 || j == 0) || (i == rows-1 || j == cols-1))
                         temp.IsBoundary = true;
 
                     myGraph[i, j] = temp;
@@ -38,11 +40,57 @@ namespace CSSP
             return myGraph;
         }
 
-        private Edge[,] BuildEdges(Vertex[,] vertices)
+        private List<Edge> BuildEdges(Vertex[,] vertices)
         {
-            throw new NotImplementedException();
-            //return null;
+            List<Edge> edges = new List<Edge>();
+            //loop through the vertices and add 
+            for(int i=0; i<vertices.GetLength(0);i++)
+            {
+                for(int j=0; j<vertices.GetLength(1);j++)
+                {
+                    //add horizontal
+                    AddHozizontalEdges(vertices[i, j],edges);
+                    AddVerticalEdges(vertices[i, j], edges);
+                    AddDiagonalEdges(vertices[i, j], edges);
+                }
+            }
+            
+            return edges;
         }
+
+        private void AddDiagonalEdges(Vertex vertex,List<Edge> list)
+        {
+            //me to g[X-1,Y-1]
+            try { AddEdge(vertex, vertices[vertex.X - 1, vertex.Y - 1], list,Math.Sqrt(2)); } catch { }
+            //me to g[X-1,Y+1]
+            try { AddEdge(vertex, vertices[vertex.X - 1, vertex.Y + 1], list, Math.Sqrt(2)); } catch { }
+            //me to g[X+1,Y-1]
+            try { AddEdge(vertex, vertices[vertex.X + 1, vertex.Y - 1], list, Math.Sqrt(2)); } catch { }
+            //me to g[X+1,Y+1]
+            try { AddEdge(vertex, vertices[vertex.X + 1, vertex.Y + 1], list, Math.Sqrt(2)); } catch { }
+        }
+
+        private void AddVerticalEdges(Vertex vertex, List<Edge> list)
+        {
+            //me to g[X,Y-1]
+            try { AddEdge(vertex, vertices[vertex.X, vertex.Y - 1],list,1); } catch { }
+            //me to g[X,Y+1]
+            try { AddEdge(vertex, vertices[vertex.X, vertex.Y + 1],list,1); } catch { }
+        }
+
+        private void AddEdge(Vertex from, Vertex to, List<Edge> list,double d)
+        {
+            list.Add(new Edge(from, to,0,d));
+        }
+
+        private void AddHozizontalEdges(Vertex vertex, List<Edge> list)
+        {
+            //me to g[X-1,Y]
+            try { AddEdge(vertex, vertices[vertex.X - 1, vertex.Y], list,1); } catch { }
+            //me to g[X+1,Y]
+            try { AddEdge(vertex, vertices[vertex.X + 1, vertex.Y], list,1); } catch { }
+        }
+
     }
 
     public class Vertex
@@ -96,9 +144,16 @@ namespace CSSP
 
     public class Edge
     {
-        private int cost;
+        private double distance;
+        public double Distance
+        {
+            get { return distance; }
+            set { distance = value; }
+        }
 
-        public int Cost
+        private double cost;
+
+        public double Cost
         {
             get { return cost; }
             set { cost = value; }
@@ -121,6 +176,19 @@ namespace CSSP
             set { to = value; }
         }
 
+
+        public Edge(Vertex f, Vertex t)
+        {
+            this.from = f;
+            this.to = t;
+        }
+        public Edge(Vertex f, Vertex t, double c,double d)
+        {
+            this.from = f;
+            this.to = t;
+            this.cost = c;
+            this.distance = d;
+        }
 
     }
 
