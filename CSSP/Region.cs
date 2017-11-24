@@ -11,10 +11,12 @@ namespace CSSP
     /// </summary>
     class Region
     {
-        public Region()
+        public Region(Aircraft a, double l, double w)
         {
             //default values, no no-fly zones, no radars;
-            myGraph = new Graph(6, 6);
+            this.regionLength = l;
+            this.regionWidth = w;
+            this.myGraph = new Graph(this, a);
             
         }
 
@@ -54,7 +56,6 @@ namespace CSSP
             get { return noFlyZones; }
             set { noFlyZones = value; }
         }
-
 
 
 #region RegionClasses

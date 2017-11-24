@@ -11,7 +11,8 @@ namespace CSSP
         static void Main(string[] args)
         {
             //intialize matrices
-            Region region = new Region();
+            Aircraft aircraft = new Aircraft(100, Math.PI / 2);
+            Region region = new Region(aircraft, 10, 10);
             
             region.ToString();
         }

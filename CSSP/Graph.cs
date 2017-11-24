@@ -12,7 +12,8 @@ namespace CSSP
         Edge[,] edges;
         public Graph(Region r, Aircraft a)
         {
-            this.vertices = BuildGraph(rows, cols);
+            this.vertices = BuildGraph((int)Math.Ceiling(r.RegionLength/a.MinTurnRadius), (int)Math.Ceiling(r.RegionWidth / a.MinTurnRadius));
+            this.edges = BuildEdges(this.vertices);
         }
         public Graph()
         {
