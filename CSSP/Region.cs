@@ -20,6 +20,15 @@ namespace CSSP
             
         }
 
+        internal Path findPath(Region region)
+        {
+            Path opPath = new Path();
+
+            //go through the region and find the optimal path for the plane using Joksch's algorithm
+            
+
+            return opPath;
+        }
 
         private double regionLength;
         public double RegionLength

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CSSP
 {
-    class Aircraft
+    public class Aircraft
     {
         public Aircraft(double d, double mtr)
         {

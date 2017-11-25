@@ -8,9 +8,24 @@ namespace CSSP
 {
     class Graph
     {
-        Vertex[,] vertices;
-        List<Edge> edges;
-        List<Vertex> boundarySet;
+        private Vertex[,] vertices;
+        public Vertex[,] Vertices
+        {
+            get { return vertices; }
+            set { vertices = value; }
+        }
+        private List<Edge> edges;
+        public List<Edge> Edges
+        {
+            get { return edges; }
+            set { edges = value; }
+        }
+        private List<Vertex> boundarySet;
+        public List<Vertex> BoundarySet
+        {
+            get { return boundarySet; }
+            set { boundarySet = value; }
+        }
         public Graph(Region r, Aircraft a)
         {
             this.vertices = BuildGraph((int)Math.Ceiling(r.RegionLength/a.MinTurnRadius), (int)Math.Ceiling(r.RegionWidth / a.MinTurnRadius));
@@ -89,6 +104,28 @@ namespace CSSP
             try { AddEdge(vertex, vertices[vertex.X - 1, vertex.Y], list,1); } catch { }
             //me to g[X+1,Y]
             try { AddEdge(vertex, vertices[vertex.X + 1, vertex.Y], list,1); } catch { }
+        }
+
+        public bool IsPathAllowed(Edge a, Edge b, Aircraft ac)
+        {
+            bool isAllowed = false;
+            
+            //if the angle between the edge a and b is >= minTurnRadius
+            //       (a.F.x  ,a.F.y) , (a.T.x , a.T.y)
+            //Line1: (x1, y1)        , (x2, y2)
+            //       (b.F.x , b.F.y) , (b.T.x , b.T.y)
+            //Line2: (x3, y3)        , (x4, y4)
+            //double Angle = Math.Atan2(y2 - y1, x2 - x1) - Math.Atan2(y4 - y3, x4 - x3);
+            double Angle = Math.Atan2(a.To.Y - a.From.Y, a.To.X - a.From.X) - Math.Atan2(b.To.Y - b.From.Y, b.To.X - b.From.X);
+
+
+            double theta1 = Math.Atan2(a.From.Y - a.To.Y, a.From.X - a.To.X);
+            //double t1 = Math.Atan2(1, 1);
+            //double t2 = Math.Atan2()
+            double theta2 = Math.Atan2(b.From.Y - b.To.Y, b.From.X - b.To.X);
+            double diff = Math.Abs(theta1 - theta2);
+            double angle = Math.Min(diff, Math.Abs(180 - diff));
+            return isAllowed;
         }
 
     }
