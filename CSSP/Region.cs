@@ -11,25 +11,16 @@ namespace CSSP
     /// </summary>
     class Region
     {
+        #region Contructors
         public Region(Aircraft a, double l, double w)
         {
             //default values, no no-fly zones, no radars;
             this.regionLength = l;
             this.regionWidth = w;
-            this.myGraph = new Graph(this, a);
-            
+            this.myGraph = new Graph(this, a);   
         }
-
-        internal Path findPath(Region region)
-        {
-            Path opPath = new Path();
-
-            //go through the region and find the optimal path for the plane using Joksch's algorithm
-            
-
-            return opPath;
-        }
-
+        #endregion
+        #region Properties
         private double regionLength;
         public double RegionLength
         {
@@ -66,8 +57,56 @@ namespace CSSP
             set { noFlyZones = value; }
         }
 
+        #endregion
 
-#region RegionClasses
+        #region Methods
+        internal Path FindPath(Region region)
+        {
+            Path opPath = new Path();
+
+            //go through the region and find the optimal path for the plane starting from the target
+
+            //concatenate the lowest 2 cost paths from the target to the boundary
+
+
+            return opPath;
+        }
+
+        public void AddNoFlyZone(double ulx, double uly, double len, double wid)
+        {
+            NoFlyZone zone = new NoFlyZone(ulx, uly, len, wid);
+            this.noFlyZones.Add(zone);
+            AddNoFlyZoneCostToEdges(zone, myGraph);
+        }
+
+        public void AddRadarLocation(double x, double y, double radius)
+        {
+            Radar radar = new Radar(x, y, radius);
+            this.radars.Add(radar);
+            AddRadarCostToEdges(radar, myGraph);
+        }
+        /// <summary>
+        /// Finds what edges the Radar intersects and adds 1 to the cost of those edges.
+        /// </summary>
+        /// <param name="radar">the radar</param>
+        /// <param name="graph">graph over the region</param>
+        public void AddRadarCostToEdges(Radar radar, Graph graph)
+        {
+
+        }
+        /// <summary>
+        /// Finds the edges of the graph where the no-fly zone sits on top of and then adds 10 to the cost of those edges.
+        /// </summary>
+        /// <param name="noFlyZone">the no-fly zone in the region</param>
+        /// <param name="graph">graph over the region</param>
+        public void AddNoFlyZoneCostToEdges(NoFlyZone noFlyZone, Graph graph)
+        {
+
+        }
+        
+        #endregion
+
+        #region RegionClasses
         /// <summary>
         /// Class that holds the information for the no-fly zones. A no-fly zone is a rectangle defined by it's upper left x,y location in the region, and its
         /// length and width.

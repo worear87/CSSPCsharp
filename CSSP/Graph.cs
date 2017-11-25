@@ -6,6 +6,7 @@ namespace CSSP
 {
     class Graph
     {
+        #region Properties
         private Vertex[,] vertices;
         public Vertex[,] Vertices
         {
@@ -24,9 +25,12 @@ namespace CSSP
             get { return boundarySet; }
             set { boundarySet = value; }
         }
+        #endregion
+        #region Constructors
         public Graph(Region r, Aircraft a)
         {
-            this.vertices = BuildGraph((int)Math.Ceiling(r.RegionLength/a.MinTurnRadius), (int)Math.Ceiling(r.RegionWidth / a.MinTurnRadius));
+            //this.vertices = BuildGraph((int)Math.Ceiling(r.RegionLength/a.MinTurnRadius), (int)Math.Ceiling(r.RegionWidth / a.MinTurnRadius));
+            this.vertices = BuildGraph(r.RegionLength, r.RegionWidth, a.MinTurnRadius);
             this.edges = BuildEdges(this.vertices);
             this.boundarySet = (from Vertex v in vertices where v.IsBoundary == true select v).ToList<Vertex>(); 
         }
@@ -34,6 +38,34 @@ namespace CSSP
         {
             this.vertices = null;
         }
+        #endregion
+        #region Methods
+        private Vertex[,] BuildGraph(double regionLen, double regionWidth, double minTurnRad)
+        {
+            int rows = (int)Math.Ceiling(regionLen / minTurnRad);
+            int cols = (int)Math.Ceiling(regionWidth / minTurnRad);
+            Vertex[,] myGraph = new Vertex[rows, cols];
+
+            double currRegXPos = 0, currRegYPos = 0;
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    Vertex temp = new Vertex(currRegXPos,i,currRegYPos,j);
+                    if ((i == 0 || j == 0) || (i == rows - 1 || j == cols - 1))
+                        temp.IsBoundary = true;
+
+                    myGraph[i, j] = temp;
+
+                    currRegYPos += minTurnRad;
+                }
+                currRegYPos = 0;
+                currRegXPos += minTurnRad;
+            }
+            return myGraph;
+        }
+
 
         private Vertex[,] BuildGraph(int rows, int cols)
         {
@@ -74,21 +106,21 @@ namespace CSSP
         private void AddDiagonalEdges(Vertex vertex,List<Edge> list)
         {
             //me to g[X-1,Y-1]
-            try { AddEdge(vertex, vertices[vertex.X - 1, vertex.Y - 1], list,Math.Sqrt(2)); } catch { }
+            try { AddEdge(vertex, vertices[vertex.Row - 1, vertex.Col - 1], list,Math.Sqrt(2)); } catch { }
             //me to g[X-1,Y+1]
-            try { AddEdge(vertex, vertices[vertex.X - 1, vertex.Y + 1], list, Math.Sqrt(2)); } catch { }
+            try { AddEdge(vertex, vertices[vertex.Row - 1, vertex.Col + 1], list, Math.Sqrt(2)); } catch { }
             //me to g[X+1,Y-1]
-            try { AddEdge(vertex, vertices[vertex.X + 1, vertex.Y - 1], list, Math.Sqrt(2)); } catch { }
+            try { AddEdge(vertex, vertices[vertex.Row + 1, vertex.Col - 1], list, Math.Sqrt(2)); } catch { }
             //me to g[X+1,Y+1]
-            try { AddEdge(vertex, vertices[vertex.X + 1, vertex.Y + 1], list, Math.Sqrt(2)); } catch { }
+            try { AddEdge(vertex, vertices[vertex.Row + 1, vertex.Col + 1], list, Math.Sqrt(2)); } catch { }
         }
 
         private void AddVerticalEdges(Vertex vertex, List<Edge> list)
         {
             //me to g[X,Y-1]
-            try { AddEdge(vertex, vertices[vertex.X, vertex.Y - 1],list,1); } catch { }
+            try { AddEdge(vertex, vertices[vertex.Row, vertex.Col - 1],list,1); } catch { }
             //me to g[X,Y+1]
-            try { AddEdge(vertex, vertices[vertex.X, vertex.Y + 1],list,1); } catch { }
+            try { AddEdge(vertex, vertices[vertex.Row, vertex.Col + 1],list,1); } catch { }
         }
 
         private void AddEdge(Vertex from, Vertex to, List<Edge> list,double d)
@@ -99,9 +131,9 @@ namespace CSSP
         private void AddHozizontalEdges(Vertex vertex, List<Edge> list)
         {
             //me to g[X-1,Y]
-            try { AddEdge(vertex, vertices[vertex.X - 1, vertex.Y], list,1); } catch { }
+            try { AddEdge(vertex, vertices[vertex.Row - 1, vertex.Col], list,1); } catch { }
             //me to g[X+1,Y]
-            try { AddEdge(vertex, vertices[vertex.X + 1, vertex.Y], list,1); } catch { }
+            try { AddEdge(vertex, vertices[vertex.Row + 1, vertex.Col], list,1); } catch { }
         }
 
         public bool IsPathAllowed(Edge a, Edge b, Aircraft ac)
@@ -141,29 +173,59 @@ namespace CSSP
             return (BAx * BCy) - (BAy * BCx);
         }
 
+#endregion
     }
 
+    #region GraphClasses
     public class Vertex
     {
-        public Vertex(int x, int y)
+        public Vertex(double x, double y)
         {
             this.X = x;
             this.Y = y;
         }
-        private int x;
 
-        public int X
+        public Vertex(int row, int col)
+        {
+            this.row = row;
+            this.col = col;
+        }
+
+        public Vertex(double x, int row, double y, int col)
+        {
+            this.x = x;
+            this.row = row;
+            this.y = y;
+            this.col = col;
+        }
+
+        private double x;
+
+        public double X
         {
             get { return x; }
             set { x = value; }
         }
 
-        private int y;
+        private double y;
 
-        public int Y
+        public double Y
         {
             get { return y; }
             set { y = value; }
+        }
+
+        private int row;
+        public int Row
+        {
+            get { return row; }
+            set { row = value; }
+        }
+        private int col;
+        public int Col
+        {
+            get { return col; }
+            set { col = value; }
         }
 
         private bool isBoundary;
@@ -252,4 +314,6 @@ namespace CSSP
             set { this.pathToTake = value; }
         }
     }
+
+#endregion
 }
