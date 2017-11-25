@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CSSP
 {
@@ -108,24 +106,39 @@ namespace CSSP
 
         public bool IsPathAllowed(Edge a, Edge b, Aircraft ac)
         {
-            bool isAllowed = false;
-            
-            //if the angle between the edge a and b is >= minTurnRadius
-            //       (a.F.x  ,a.F.y) , (a.T.x , a.T.y)
-            //Line1: (x1, y1)        , (x2, y2)
-            //       (b.F.x , b.F.y) , (b.T.x , b.T.y)
-            //Line2: (x3, y3)        , (x4, y4)
-            //double Angle = Math.Atan2(y2 - y1, x2 - x1) - Math.Atan2(y4 - y3, x4 - x3);
-            double Angle = Math.Atan2(a.To.Y - a.From.Y, a.To.X - a.From.X) - Math.Atan2(b.To.Y - b.From.Y, b.To.X - b.From.X);
+            double dp = DotProduct(a, b);
+            double cp = CrossProduct(a, b);
+            double ang = Math.Atan2(cp, dp);
+            double angDeg = ang * (180/Math.PI);
+            double minTurnDeg = ac.MinTurnRadius * (180 / Math.PI);
+            if (angDeg < minTurnDeg)
+                return false;
+            else
+                return true;
+        }
 
+        private double DotProduct(Edge a, Edge b)
+        {
+            double BAx, BAy, BCx, BCy;
 
-            double theta1 = Math.Atan2(a.From.Y - a.To.Y, a.From.X - a.To.X);
-            //double t1 = Math.Atan2(1, 1);
-            //double t2 = Math.Atan2()
-            double theta2 = Math.Atan2(b.From.Y - b.To.Y, b.From.X - b.To.X);
-            double diff = Math.Abs(theta1 - theta2);
-            double angle = Math.Min(diff, Math.Abs(180 - diff));
-            return isAllowed;
+            BAx = a.From.X - a.To.X;
+            BAy = a.From.Y - a.To.Y;
+            BCx = b.To.X - a.To.X;
+            BCy = b.To.Y - a.To.Y;
+
+            return (BAx * BCx) + (BAy * BCy);
+        }
+
+        private double CrossProduct(Edge a, Edge b)
+        {
+            double BAx, BAy, BCx, BCy;
+
+            BAx = a.From.X - a.To.X;
+            BAy = a.From.Y - a.To.Y;
+            BCx = b.To.X - a.To.X;
+            BCy = b.To.Y - a.To.Y;
+
+            return (BAx * BCy) - (BAy * BCx);
         }
 
     }
