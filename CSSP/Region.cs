@@ -92,8 +92,19 @@ namespace CSSP
         /// <param name="graph">graph over the region</param>
         public void AddRadarCostToEdges(Radar radar, Graph graph)
         {
-
+            foreach(Edge e in graph.Edges)
+            {
+                if (DoesRadarCoverEdge(radar, e))
+                    e.Cost += 1;
+            }
         }
+
+        private bool DoesRadarCoverEdge(Radar radar, Edge edge)
+        {
+            
+            return false;
+        }
+
         /// <summary>
         /// Finds the edges of the graph where the no-fly zone sits on top of and then adds 10 to the cost of those edges.
         /// </summary>
@@ -101,7 +112,16 @@ namespace CSSP
         /// <param name="graph">graph over the region</param>
         public void AddNoFlyZoneCostToEdges(NoFlyZone noFlyZone, Graph graph)
         {
+            foreach(Edge e in graph.Edges)
+            {
+                if (DoesNoFlyZoneCoverEdge(noFlyZone, e))
+                    e.Cost += 10;
+            }
+        }
 
+        private bool DoesNoFlyZoneCoverEdge(NoFlyZone noFlyZone, Edge edge)
+        {
+            return false;
         }
         
         #endregion

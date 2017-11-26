@@ -65,8 +65,6 @@ namespace CSSP
             }
             return myGraph;
         }
-
-
         private Vertex[,] BuildGraph(int rows, int cols)
         {
             Vertex[,] myGraph = new Vertex[rows, cols];
