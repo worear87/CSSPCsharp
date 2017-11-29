@@ -47,21 +47,23 @@ namespace CSSP
             Vertex[,] myGraph = new Vertex[rows, cols];
 
             double currRegXPos = 0, currRegYPos = 0;
-
+            int id = 0;
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < cols; j++)
                 {
-                    Vertex temp = new Vertex(currRegXPos,i,currRegYPos,j);
+                    Vertex temp = new Vertex(currRegXPos,i,currRegYPos,j,id);
                     if ((i == 0 || j == 0) || (i == rows - 1 || j == cols - 1))
                         temp.IsBoundary = true;
 
                     myGraph[i, j] = temp;
 
                     currRegYPos += minTurnRad;
+                    id++;
                 }
                 currRegYPos = 0;
                 currRegXPos += minTurnRad;
+                id++;
             }
             return myGraph;
         }
@@ -189,12 +191,20 @@ namespace CSSP
             this.col = col;
         }
 
-        public Vertex(double x, int row, double y, int col)
+        public Vertex(double x, int row, double y, int col,int id)
         {
             this.x = x;
             this.row = row;
             this.y = y;
             this.col = col;
+            this.id = id;
+        }
+
+        private int id;
+        public int ID
+        {
+            get { return id; }
+            set { id = value; }
         }
 
         private double x;
@@ -254,6 +264,13 @@ namespace CSSP
 
     public class Edge
     {
+        private int id;
+        public int ID
+        {
+            get { return id; }
+            set { id = value; }
+        }
+
         private double distance;
         public double Distance
         {

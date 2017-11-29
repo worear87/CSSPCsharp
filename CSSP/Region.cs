@@ -17,7 +17,10 @@ namespace CSSP
             //default values, no no-fly zones, no radars;
             this.regionLength = l;
             this.regionWidth = w;
-            this.myGraph = new Graph(this, a);   
+            this.myGraph = new Graph(this, a);
+            this.radars = new List<Radar>();
+            this.noFlyZones = new List<NoFlyZone>();
+            this.ac = a;
         }
         #endregion
         #region Properties
@@ -57,20 +60,71 @@ namespace CSSP
             set { noFlyZones = value; }
         }
 
+        private Aircraft ac;
+        public Aircraft AC
+        {
+            get { return ac; }
+            set { this.ac = value; }
+        }
         #endregion
 
         #region Methods
-        internal Path FindPath(Region region)
+        internal Path FindPath(Region region,Vertex target)
         {
             Path opPath = new Path();
+            double D = region.ac.Distance;
+            int D2 = (int)D / 2;
+            double[,] w = new double[region.myGraph.Vertices.Length,D2];
+            Edge[,] l = new Edge[region.myGraph.Vertices.Length, D2];
+
+            int cnt = 0;
+            foreach(Edge e in region.MyGraph.Edges)
+            {
+                e.ID = cnt;
+            }
+
+            for (int i = 0; i < D2; i++)
+                w[target.ID, i] = 0;
+
+            for(int i=0; i<region.myGraph.Vertices.Length;i++)
+            {
+                for(int j=0; j<D2;j++)
+                {
+                    if (i != target.ID)
+                    {
+                        w[i, j] = int.MaxValue;
+                        l[i, j] = null;
+                    }
+                }
+            }
+
 
             //go through the region and find the optimal path for the plane starting from the target
-
+            for(int i=1; i<D2; i++)
+            {
+                //need to find the shortest distance to target t from v
+                foreach(Vertex v in region.myGraph.Vertices)
+                {
+                    if (v != target)
+                    {
+                        //w[v.ID, i] = minCost(w[v, i - 1], w[u, i - duv] + cuv);
+                        //if(w[v.ID,i] == w[v.ID,i-1])
+                        //{
+                        //    l[v.ID, i] = l[v.ID, i - 1];
+                        //}
+                        //else
+                        //{
+                        //    l[v.ID, i] = uv;
+                        //}
+                    }
+                }
+            }
             //concatenate the lowest 2 cost paths from the target to the boundary
 
 
             return opPath;
         }
+
 
         public void AddNoFlyZone(double ulx, double uly, double len, double wid)
         {
